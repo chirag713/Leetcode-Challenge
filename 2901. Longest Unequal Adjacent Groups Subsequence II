@@ -1,0 +1,107 @@
+
+
+2901. Longest Unequal Adjacent Groups Subsequence II
+
+
+We are given:
+
+ 1) A list of words.
+  
+ 2) A corresponding group ID for each word.
+
+We need to find the longest subsequence of words that satisfies:
+
+  1) All words are of the same length.
+  
+  2) Each adjacent pair in the subsequence must come from different groups.
+  
+  3) Each adjacent pair must differ by exactly one character.
+
+✅ Why we did what we did:
+1. check(a, b) Function:
+We use this helper to verify whether two words differ by exactly one character — a core constraint of the problem.
+
+2. Dynamic Programming (dp[i]):
+We define dp[i] as the length of the longest valid subsequence ending at index i.
+This allows us to build the solution incrementally by checking all valid previous transitions for each word.
+
+3. Transition Logic:
+For every i, we check all j < i and try to transition from words[j] to words[i]. The transition is valid if:
+
+  words[i].length == words[j].length
+  
+  groups[i] != groups[j]
+  
+  check(words[i], words[j]) == true (i.e., they differ by exactly one character)
+
+If the above conditions are satisfied and dp[j] + 1 > dp[i], we update:
+
+    dp[i] = dp[j] + 1;
+    change[i] = j; // for backtracking the path
+4. Backtracking with change[]:
+Once the dp[] is built, we find the index with the maximum value (ans), and use the change[] array to reconstruct the path (i.e., the actual words in the subsequence).
+
+🧮 Time and Space Complexity
+Time Complexity: O(n² * m)
+
+  We check each pair of words → O(n²)
+  
+  For each comparison, we compare two strings of length m → O(m)
+
+Space Complexity: O(n)
+
+We use dp[], change[], and a result[] array to store intermediate data.
+
+🔍 Why Dynamic Programming?
+This is a classical variation of Longest Increasing Subsequence (LIS), where the "increasing" condition is replaced by a custom transition condition:
+
+    One character difference
+    
+    Same word length
+    
+    Different group
+
+So, we adapted the LIS approach using a custom comparator (check) and added transition restrictions.
+
+
+Here is my code 
+
+------------------------------------------------------------------------------------------
+
+
+class Solution {
+public:
+    bool check(string a, string b){
+        int diff=0;
+        for(int i=0;i<a.size();i++){
+            if(a[i]!=b[i]) diff++;
+        }
+        return diff==1;
+    }
+    vector<string> getWordsInLongestSubsequence(vector<string>& words, vector<int>& groups) {
+        int n = words.size();
+        vector<int>dp( n , 1 );
+        int ans=0;
+        vector<int>change(n , -1);
+        for(int i=1;i<n;i++){
+            for(int j=0; j< i;j++){
+                if(words[i].size() == words[j].size() && groups[i]!=groups[j] && check(words[i] , words[j])){ 
+                    if(dp[i] < dp[j]+1){
+                        dp[i]= dp[j]+1 ;
+                        change[i]= j;
+                    }
+                }
+            }
+            if(dp[i] > dp[ans]) ans=i;
+        }
+        vector<string>result;
+        while(ans!=-1){
+            result.push_back(words[ans]);
+            ans = change[ans];
+        }
+        reverse(result.begin(), result.end());
+        return result;
+    }
+};
+
+
