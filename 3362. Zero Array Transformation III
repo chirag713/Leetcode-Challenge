@@ -1,0 +1,90 @@
+3362. Zero Array Transformation III
+----------------------------------------------
+
+Problem Statement
+You are given:
+
+An integer array nums of length n.
+
+A list of queries queries, where each query is [li, ri].
+
+Each query represents an operation where you can decrement the value at each index in the range [li, ri] in nums by at most 1. The decrement amount can be chosen independently for each index within that range.
+
+The goal is to transform nums into a Zero Array (all elements zero) after applying some subset of these queries.
+
+Task:
+Return the maximum number of queries that can be removed from the list such that the remaining queries can still transform nums into a zero array. If it is impossible to convert nums to a zero array even using all queries, return -1.
+
+Approach and Explanation
+Key Insight
+Each element nums[i] requires at least nums[i] decrements applied at index i.
+
+Each query [li, ri] can decrement the values in the range by at most 1.
+
+We want to remove as many queries as possible, while still guaranteeing that the remaining queries cover every index enough times to reduce nums to zero.
+
+Algorithm Outline
+Sort queries by their start index (li).
+
+Use two priority queues:
+
+a: A max-heap to store the end indices (ri) of queries that have started but are not yet used.
+
+r: A min-heap to keep track of the queries currently used (based on their end indices).
+
+Iterate through each index i in nums (from 0 to n-1):
+
+Add all queries that start at or before i into max-heap a (using their end indices).
+
+Remove from min-heap r any queries whose end index is less than i (they no longer cover i).
+
+While the number of queries in r is less than nums[i] (meaning i requires more decrements):
+
+If a is empty or the largest ri in a is less than i (meaning no available query covers i), return -1.
+
+Otherwise, move the query with the largest ri from a to r (using it to cover i).
+
+After processing all indices, the queries remaining in a are the ones that can be removed.
+
+Why This Works
+We ensure that at each index i, the number of active queries covering i (r.size()) is at least nums[i].
+
+We always pick the query with the farthest end index first (greedy approach), which maximizes coverage for future indices.
+
+Queries not needed to cover any nums[i] can be safely removed.
+
+Complexity Analysis
+Time Complexity: O(n log m), where n = length of nums, m = number of queries.
+
+Sorting queries: O(m log m).
+
+Iterating and pushing/popping from priority queues: O(n log m).
+
+Space Complexity: O(m) for priority queues.
+
+Here is my code
+-----------------------------------------------------------
+class Solution {
+ public:
+  int maxRemoval(vector<int>& nums, vector<vector<int>>& q) {
+    int idx = 0;
+    priority_queue<int> a;                       
+    priority_queue<int, vector<int>, greater<>> r;  
+
+   sort(q.begin() , q.end());
+
+    for (int i = 0; i < nums.size(); ++i) {
+      while (idx < q.size() && q[idx][0] <= i)
+        a.push(q[idx++][1]);
+      while (!r.empty() && r.top() < i)
+        r.pop();
+      while (nums[i] > r.size()) {
+        if (a.empty() || a.top() < i)
+          return -1;
+        r.push(a.top()), a.pop();
+      }
+    }
+
+    return a.size();
+  }
+};
