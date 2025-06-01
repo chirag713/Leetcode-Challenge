@@ -1,0 +1,76 @@
+3355. Zero Array Transformation I
+---------------------------------------------
+
+✅ Problem Summary
+You are given:
+
+An integer array nums of length n
+
+A list of queries queries[i] = [li, ri]
+
+🔍 Objective:
+For each query [li, ri], you can select any subset of indices in the range and decrement those values by 1.
+
+After processing all queries in order, check whether you can make the array a Zero Array (i.e., all elements become 0).
+
+✅ Why We Did What We Did
+1) Observation:
+For each query, you're allowed to decrease any number of elements in [li, ri] by 1.
+
+So at most, each element nums[i] can be reduced by the number of times it appears in any query.
+
+2) Difference Array Technique:
+We use a difference array (ans[]) to efficiently track how many times each index is included across all queries:
+
+ans[li] += 1;
+ans[ri+1] -= 1; // cancel out beyond range
+Then compute the prefix sum of ans[] to find how many times each index was affected in total.
+
+3) Validation:
+Now for each index i, if nums[i] > ans[i], it means that we didn't have enough opportunities (query coverage) to reduce it to 0.
+
+So return false in such a case.
+
+🧮 Time and Space Complexity
+Time Complexity: O(n + q)
+
+q = number of queries
+
+Building difference array and validating the result = O(n)
+
+Space Complexity: O(n)
+
+For difference array ans[]
+
+
+🧠 Why This Works
+The difference array efficiently counts how many opportunities we get to reduce each element.
+
+The prefix sum builds the effective count of operations allowed on each index.
+
+Final comparison ensures that each nums[i] can be reduced to zero within the allowed operations.
+
+Here is my final code 
+-----------------------------------------------------
+class Solution {
+public:
+    bool isZeroArray(vector<int>& nums, vector<vector<int>>& queries) {
+        int n = nums.size();
+        vector<int> ans(n);
+        for (auto q : queries) {
+            int l = q[0], r = q[1];
+            ans[l]++;
+            if (r + 1 < n)
+                ans[r + 1]--;
+        }
+        vector<int> v(nums.begin(), nums.end());
+        for (int i = 1; i < n; ++i) {
+            ans[i] += ans[i - 1];
+        }
+        for (int i = n-1; i >= 0; --i) {
+            if (v[i] - ans[i] > 0)
+                return false;
+        }
+        return true;
+    }
+};
