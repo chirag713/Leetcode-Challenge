@@ -6,7 +6,7 @@ You are given:
 
 An integer array nums of length n
 
-A list of queries queries[i] = [li, ri]
+A list of queries queries[i] = [li, ri] 
 
 🔍 Objective:
 For each query [li, ri], you can select any subset of indices in the range and decrement those values by 1.
