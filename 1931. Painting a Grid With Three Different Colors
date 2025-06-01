@@ -1,0 +1,97 @@
+1931. Painting a Grid With Three Different Colors
+--------------------------------------------------------
+
+✅ Problem Summary
+We're given two integers m and n representing an m x n grid.
+
+🔍 Objective:
+Count the number of ways to color every cell using 3 colors (Red, Green, Blue) such that:
+
+No adjacent cells (up, down, left, right) share the same color.
+
+Return the total number of valid colorings modulo 1e9 + 7.
+
+✅ Why We Did What We Did
+1) State Compression + DP:
+We use dynamic programming with memoization and bitmasking to efficiently track valid configurations column by column.
+
+2) Transition by Column:
+We treat the coloring column-by-column, where the coloring of a column depends only on the previous column (not the entire grid). So we build the solution using transitions between valid column states.
+
+3) Mask Representation:
+Each column's color pattern is encoded in a bitmask (mask), where:
+
+Each cell takes 2 bits (can represent 3 colors: 1, 2, 3)
+
+A full column is represented using 2 * m bits
+
+Example:
+For a column of 3 rows, the bitmask for coloring [1, 2, 3] becomes:
+color 3 (row 2) → bits 4-5  
+color 2 (row 1) → bits 2-3  
+color 1 (row 0) → bits 0-1  
+4) Valid Color Checks:
+Within current column: No two adjacent cells (top to bottom) have the same color.
+
+With previous column: No same-color cell at same row (left to right).
+
+5) Memoization:
+We cache results using:
+mem[columnIndex][prevColumnMask]
+This avoids recomputing results for previously seen states.
+
+🧮 Time and Space Complexity
+Time Complexity: O(n * (3^m)^2)
+
+For each of the n columns, we may transition between valid column states.
+
+Number of valid column colorings is bounded by 3^m.
+
+Space Complexity: O(n * 1024)
+
+Memoization array mem[c][mask] has at most 1024 different bitmasks for m <= 5.
+
+My final code 
+--------------------------------------------------------------------------------------
+class Solution {
+public:
+    static constexpr int kMod = 1'000'000'007;
+    int m;
+    int n;
+    vector<vector<int>> mem = vector<vector<int>>(1000, vector<int>(1024));
+
+    int dp(int r, int c, int prevColMask, int currColMask) {
+        if (c == n)
+            return 1;
+        if (mem[c][prevColMask])
+            return mem[c][prevColMask];
+        if (r == m)
+            return dp(0, c + 1, currColMask, 0);
+
+        int ans = 0;
+        for (int color = 1; color <= 3; ++color) {
+            if (getColor(prevColMask, r) == color)
+                continue;
+            if (r > 0 && getColor(currColMask, r - 1) == color)
+                continue;
+            ans += dp(r + 1, c, prevColMask, setColor(currColMask, r, color));
+            ans %= kMod;
+        }
+
+        if (r == 0)
+            mem[c][prevColMask] = ans;
+
+        return ans;
+    }
+    int getColor(int mask, int r) { return mask >> r * 2 & 3; }
+    int setColor(int mask, int r, int color) { return mask | color << r * 2; }
+    int colorTheGrid(int m, int n) {
+        this->m = m;
+        this->n = n;
+        return dp(0, 0, 0, 0);
+    }
+};
+
+
+
+
