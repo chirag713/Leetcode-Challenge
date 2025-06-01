@@ -1,0 +1,143 @@
+
+73. Set Matrix Zeroes
+--------------------------------------------------
+
+✅ Problem Statement
+You are given an m x n integer matrix. If an element in the matrix is 0, set its entire row and column to 0.
+
+Note: You must do this in-place with O(1) extra space.
+
+🎯 Objective
+Transform the given matrix such that:
+
+For every 0 present at position (i, j), all elements in the i-th row and j-th column become 0.
+
+Do this without using extra space proportional to the matrix size.
+
+🧠 Theory and Approach
+Brute Force Approach:
+Use two extra arrays to track rows and columns to be zeroed.
+
+Not space-efficient.
+
+Optimized In-Place Solution:
+Idea: Use the first row and first column of the matrix to store whether a row or column should be zeroed.
+
+Additional variables: Only two boolean flags to track whether the first row and first column should be zeroed.
+
+🪜 Step-by-Step Solution
+Check First Row and Column:
+
+Scan the first row and first column to see if they originally contain any 0.
+
+Mark Rows and Columns:
+
+Traverse the rest of the matrix.
+
+For any 0 at (i, j), mark matrix[i][0] = 0 and matrix[0][j] = 0.
+
+Update Matrix:
+
+Using the markers in the first row and column, set the rest of the matrix elements to 0 where needed.
+
+Zero First Row and Column (if needed):
+
+If the original first row or column had any 0, zero them entirely.
+
+📊 Complexity Analysis
+Time Complexity: O(m × n)
+
+Space Complexity: O(1) – constant space (no extra matrices or arrays used)
+
+❓ Why v[i] - ans[i] > 0?
+Let’s break it down:
+
+v[i] is the original value at index i (from nums).
+
+ans[i] is the number of times you're allowed to decrement nums[i].
+
+So, if:
+
+v[i] - ans[i] > 0
+➤ You can't reduce nums[i] to zero (not enough allowed decrements) → return false.
+
+v[i] - ans[i] <= 0
+➤ You can make nums[i] zero (or less), so it's okay.
+
+✅ Example
+Let’s take:
+
+nums = [2, 1, 2]
+queries = [[0, 1], [1, 2]]
+Build ans using range update:
+
+After queries:
+
+ans = [1, 1, 0] → prefix sum → ans = [1, 2, 1]
+
+Now compare with original:
+
+v[0] = 2, ans[0] = 1 → 2 - 1 = 1 > 0 → ❌ Can't make zero
+
+So answer is false.
+
+✅ Conclusion
+The condition v[i] - ans[i] > 0 checks:
+
+"Did we get enough chances to decrement this number to zero?"
+
+If not, we return false. Otherwise, we return true.
+
+
+Here is my c++ code 
+----------------------------------------------------------------------------------------------------------
+class Solution {
+public:
+    void setZeroes(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        int m = matrix[0].size();
+        bool firstRowZero = false, firstColZero = false;
+
+        for (int j = 0; j < m; ++j) {
+            if (matrix[0][j] == 0) {
+                firstRowZero = true;
+                break;
+            }
+        }
+
+        for (int i = 0; i < n; ++i) {
+            if (matrix[i][0] == 0) {
+                firstColZero = true;
+                break;
+            }
+        }
+
+        for (int i = 1; i < n; ++i) {
+            for (int j = 1; j < m; ++j) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+
+        for (int i = 1; i < n; ++i) {
+            for (int j = 1; j < m; ++j) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0)
+                    matrix[i][j] = 0;
+            }
+        }
+
+        if (firstRowZero) {
+            for (int j = 0; j < m; ++j)
+                matrix[0][j] = 0;
+        }
+
+        if (firstColZero) {
+            for (int i = 0; i < n; ++i)
+                matrix[i][0] = 0;
+        }
+    }
+};
+
+
