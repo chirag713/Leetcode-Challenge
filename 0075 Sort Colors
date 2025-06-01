@@ -1,0 +1,64 @@
+0075 Sort Colors
+-------------------
+
+
+✅ Problem Summary
+We're given an array nums consisting of only 0s, 1s, and 2s, representing red, white, and blue respectively.
+
+🔍 Goal:
+Sort the array in-place such that:
+
+All 0s (reds) come first,
+
+Then 1s (whites),
+
+Then 2s (blues)
+
+You must do this in one pass with constant space.
+
+✅ Why We Did What We Did
+1) Dutch National Flag Algorithm:
+We use three pointers:
+
+low → boundary for placing 0s
+
+mid → current index being processed
+
+high → boundary for placing 2s
+
+This approach allows us to sort the array in a single pass with O(1) extra space.
+
+2) Pointer Logic:
+If nums[mid] == 0, swap it with nums[low], then increment both low and mid
+
+If nums[mid] == 1, just move mid forward
+
+If nums[mid] == 2, swap it with nums[high] and decrement high (don't move mid yet because the swapped-in value needs to be checked)
+
+🧮 Time and Space Complexity
+Time Complexity: O(n) → Each index is processed at most once
+
+Space Complexity: O(1) → Sorting is done in-place without extra storage
+
+Here is my code
+-----------------------------------------------------------
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        int low = 0, mid = 0, high = nums.size() - 1;
+        while (mid <= high) {
+            if (nums[mid] == 0) {
+                swap(nums[low], nums[mid]);
+                low++;
+                mid++;
+            }
+            else if (nums[mid] == 1) {
+                mid++;
+            }
+            else { 
+                swap(nums[mid], nums[high]);
+                high--;
+            }
+        }
+    }
+};
