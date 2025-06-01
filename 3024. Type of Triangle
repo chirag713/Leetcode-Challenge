@@ -1,0 +1,69 @@
+3024. Type of Triangle
+-------------------------------
+
+✅ Problem Summary
+We're given an array nums of size 3, where each element represents the length of a side of a triangle.
+
+🔍 Objective:
+Return the type of triangle that can be formed:
+
+"equilateral" → all sides equal
+
+"isosceles" → exactly two sides equal
+
+"scalene" → all sides different
+
+"none" → cannot form a valid triangle
+
+✅ Why We Did What We Did
+1) Triangle Inequality Theorem:
+To form a valid triangle, the sum of the lengths of any two sides must be greater than the third.
+
+Since the array has only 3 sides, after sorting, we only need to check:
+
+nums[0] + nums[1] > nums[2]
+If this is false → return "none".
+
+2) Type Detection:
+Once we confirm a valid triangle, we classify it based on the number of equal sides:
+
+all sides equal → "equilateral"
+
+exactly two sides equal → "isosceles"
+
+all sides different → "scalene"
+
+🧮 Time and Space Complexity
+Time Complexity: O(1)
+
+Sorting a size-3 array is constant time.
+
+Space Complexity: O(1)
+
+No extra space used besides a string variable
+
+
+
+Here is my code 
+------------------------------------------------------------------------
+class Solution {
+public:
+    string triangleType(vector<int>& nums) {
+        sort(nums.begin(),nums.end());
+        string ans;
+        if(nums[0]+nums[1]>nums[2]){
+            if(nums[0]==nums[1] && nums[1]==nums[2]){
+                ans="equilateral";
+            }
+            else if(nums[0]==nums[1] || nums[1]==nums[2] || nums[0]==nums[2]){
+                ans="isosceles";
+                
+            }
+            else ans="scalene";
+        }
+        else{
+            ans="none";
+        }
+        return ans;
+    }
+};
